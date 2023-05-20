@@ -1,10 +1,11 @@
 import { StyleSheet } from "react-native";
 import { store } from "./store";
-import HomeScreen from "./screens/HomeScreen";
 import { Provider } from "react-redux";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+import HomeScreen from "./screens/HomeScreen";
 import MapScreen from "./screens/MapScreen";
 
 export default function App() {

@@ -9,6 +9,8 @@ import React, { useState } from "react";
 import tw from "tailwind-react-native-classnames";
 import { Icon, Image } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import { selectTravelTimeInformation } from "../slices/navSlice";
 
 const data = [
   {
@@ -34,9 +36,12 @@ const data = [
   },
 ];
 
+const SURGE_CHARGE_RATE = 1.5;
+
 const RideOptionsCard = () => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState(null);
+  const travelTimeInformation = useSelector(selectTravelTimeInformation);
 
   return (
     <View style={tw`bg-white flex-grow`}>
@@ -47,7 +52,9 @@ const RideOptionsCard = () => {
         >
           <Icon name="chevron-left" type="font-awesome" />
         </TouchableOpacity>
-        <Text style={tw`text-center py-5 text-xl`}>Select a Ride</Text>
+        <Text style={tw`text-center py-5 text-xl`}>
+          Select a Ride - {travelTimeInformation?.distance.text}
+        </Text>
       </View>
 
       <FlatList
@@ -56,7 +63,7 @@ const RideOptionsCard = () => {
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => setSelected(item)}
-            style={tw`flex-row items-center justify-between px-10 ${
+            style={tw`flex-row items-center justify-between px-2 ${
               item.id === selected?.id && "bg-gray-200"
             }`}
           >
@@ -70,14 +77,24 @@ const RideOptionsCard = () => {
             />
             <View style={tw`-ml-6`}>
               <Text style={tw`text-xl font-semibold`}>{item.title}</Text>
-              <Text>Travel Time...</Text>
+              <Text>{travelTimeInformation?.duration.text} Travel Time</Text>
             </View>
-            <Text style={tw`text-xl`}>$10</Text>
+            <Text style={tw`text-xl`}>
+              {new Intl.NumberFormat("en-gb", {
+                style: "currency",
+                currency: "GBP",
+              }).format(
+                (travelTimeInformation?.duration.value *
+                  SURGE_CHARGE_RATE *
+                  item.multiplier) /
+                  100
+              )}
+            </Text>
           </TouchableOpacity>
         )}
       />
 
-      <View>
+      <View style={tw`mt-auto border-t border-gray-200`}>
         <TouchableOpacity
           disabled={!selected}
           style={tw`bg-black py-3 m-3 ${!selected && "bg-gray-300"}`}
